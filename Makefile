@@ -26,7 +26,7 @@ run: venv
 .PHONY: run
 
 format: venv
-	cd src && ../venv/bin/black -l 80 diamondquest
+	cd src && ../venv/bin/black -l 80 wordperil
 .PHONY: format
 
 tidy: venv
