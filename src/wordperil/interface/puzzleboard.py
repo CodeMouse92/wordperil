@@ -4,6 +4,8 @@ from PySide2.QtWidgets import QGridLayout, QVBoxLayout, QLabel, QFrame, QWidget
 from PySide2.QtGui import QFont
 from PySide2.QtCore import Qt
 
+from wordperil.common.constants import TILES_HORIZONTAL, TILES_VERTICAL
+from wordperil.model.puzzle import Puzzle
 
 class TileStatus(Enum):
     UNUSED = 0
@@ -49,7 +51,7 @@ class Tile(QLabel):
         self.setLetter(letter)
 
     def setLetter(self, letter=None):
-        if letter is None or letter is " ":
+        if letter is None or letter == " ":
             self.setText("#")
             self.status = TileStatus.UNUSED
             self.setStyleSheet(self.style_unused)
@@ -91,8 +93,6 @@ class Clue(QLabel):
 
 
 class PuzzleGrid(QWidget):
-    TILES_HORIZONTAL = 14
-    TILES_VERTICAL = 4
 
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -104,8 +104,8 @@ class PuzzleGrid(QWidget):
 
         # Generate board
         self.tiles = [
-            [Tile() for _ in range(self.TILES_HORIZONTAL)]
-            for _ in range(self.TILES_VERTICAL)
+            [Tile() for _ in range(TILES_HORIZONTAL)]
+            for _ in range(TILES_VERTICAL)
         ]
         for v, row in enumerate(self.tiles):
             for h, tile in enumerate(row):
@@ -114,43 +114,9 @@ class PuzzleGrid(QWidget):
         self.setLayout(layout)
 
     def setPuzzle(self, puzzle):
-
-        def extractRow(self, puzzle, row):
-            length = 0
-            line = ""
-            unused = ""
-            for word in puzzle.split():
-                length += len(word) + 1
-                if length > self.TILES_HORIZONTAL:
-                    unused = f"{unused} {word}"
-                else:
-                    line = f"{line} {word}"
-
-            line = line.center(self.TILES_HORIZONTAL - 1)
-            for i, letter in enumerate(line):
-                self.tiles[row][i].setLetter(letter)
-
-            return unused
-
-        # Determine how many rows are needed
-        rows = len(puzzle) // self.TILES_HORIZONTAL
-
-        # Capitalize puzzle
-        puzzle = puzzle.upper()
-
-        if rows <= (self.TILES_VERTICAL // 2):
-            start_row = 1
-            end_row = start_row + rows
-        elif rows <= self.TILES_VERTICAL:
-            start_row = 0
-            end_row = start_row + rows
-        else:
-            raise ValueError("Cannot fit puzzle!")
-
-        print(f"{rows} and {(self.TILES_VERTICAL // 2)}")
-
-        for row in range(start_row, end_row + 1):
-            puzzle = extractRow(self, puzzle, row)
+        for i, row in enumerate(puzzle):
+            for j, letter in enumerate(row):
+                self.tiles[i][j].setLetter(letter)
 
 
 class PuzzleBoard(QWidget):
@@ -171,7 +137,7 @@ class PuzzleBoard(QWidget):
         self.setLayout(self.layout)
 
         # HACK
-        self.setPuzzle("Phrase", "ask forgiveness not permission")
+        self.setPuzzle("Phrase", Puzzle("guido's time machine"))
 
     def setPuzzle(self, clue, puzzle):
         self.clue.setText(clue)
