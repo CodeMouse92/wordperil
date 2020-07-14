@@ -14,7 +14,7 @@ def main():
     window.show()
 
     window.showMessage("word peril", "Press L to load puzzles.")
-
+    window.showStatus("Created by Jason C. McDonald.")
     # Run the main Qt loop
     sys.exit(app.exec_())
 

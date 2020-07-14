@@ -34,6 +34,7 @@ class ScoreWidget(QWidget):
         self.player = QLineEdit()
         self.player.setStyleSheet(self.normal_style)
         self.player.setFont(self.font)
+        self.player.setAlignment(Qt.AlignCenter)
         self.layout.addWidget(self.player)
 
     def lock(self):

@@ -3,7 +3,7 @@ from PySide2.QtWidgets import QGridLayout, QWidget
 from .puzzleboard import PuzzleBoard
 from .usedletterboard import UsedLetterBoard
 from .scoreboard import ScoreBoard
-
+from .statusbar import StatusBar
 
 class Window(QWidget):
 
@@ -25,16 +25,22 @@ class Window(QWidget):
         self.setLayout(self.layout)
 
         self.usedletters = UsedLetterBoard()
-        self.layout.addWidget(self.usedletters, 0, 0, 3, 1)
+        self.layout.addWidget(self.usedletters, 0, 0, 4, 1)
 
         self.board = PuzzleBoard()
-        self.layout.addWidget(self.board, 0, 1, 3, 3)
+        self.layout.addWidget(self.board, 0, 1, 4, 3)
 
         self.scores = ScoreBoard()
-        self.layout.addWidget(self.scores, 3, 0, 1, -1)
+        self.layout.addWidget(self.scores, 4, 0, 2, -1)
+
+        self.statusbar = StatusBar()
+        self.layout.addWidget(self.statusbar, 6, 0, 1, -1)
 
     def showMessage(self, message, prompt):
         self.board.showMessage(message, prompt)
+
+    def showStatus(self, status):
+        self.statusbar.showMessage(status)
 
     def loadPuzzle(self, puzzle):
         """Load a puzzle into the gameboard."""
