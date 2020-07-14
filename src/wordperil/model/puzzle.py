@@ -18,12 +18,15 @@ class Puzzle:
         line = line.strip().center(TILES_HORIZONTAL - 1)
         return (line, unused)
 
-    def __init__(self, string):
-        string = string.upper()
+    def __init__(self, puzzle, clue=""):
+        self.clue = clue
+
+        # Break the puzzle down into rows to fit on puzzle board
+        puzzle = puzzle.upper()
 
         self.rows = []
-        while string:
-            line, string = self.extract_row(string)
+        while puzzle:
+            line, puzzle = self.extract_row(puzzle)
             self.rows.append(line)
 
         empty_rows = TILES_VERTICAL - len(self.rows)

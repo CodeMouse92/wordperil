@@ -5,7 +5,7 @@ from PySide2.QtGui import QFont
 from PySide2.QtCore import Qt
 
 from wordperil.common.constants import TILES_HORIZONTAL, TILES_VERTICAL
-from wordperil.model.puzzle import Puzzle
+
 
 class TileStatus(Enum):
     UNUSED = 0
@@ -79,8 +79,8 @@ class Clue(QLabel):
     """
     font = QFont("mono", 20)
 
-    def __init__(self, text="", **kwargs):
-        super().__init__(text, **kwargs)
+    def __init__(self, **kwargs):
+        super().__init__("", **kwargs)
 
         # Widget styling
         self.setFrameStyle(QFrame.Panel | QFrame.Raised)
@@ -90,6 +90,8 @@ class Clue(QLabel):
         self.setStyleSheet(self.stylesheet)
         self.setFont(self.font)
         self.setAlignment(Qt.AlignCenter)
+
+        self.setMaximumHeight(40)
 
 
 class PuzzleGrid(QWidget):
@@ -136,9 +138,6 @@ class PuzzleBoard(QWidget):
         # Set dialog layout
         self.setLayout(self.layout)
 
-        # HACK
-        self.setPuzzle("Phrase", Puzzle("guido's time machine"))
-
-    def setPuzzle(self, clue, puzzle):
-        self.clue.setText(clue)
+    def setPuzzle(self, puzzle):
+        self.clue.setText(puzzle.clue)
         self.puzzle.setPuzzle(puzzle)
