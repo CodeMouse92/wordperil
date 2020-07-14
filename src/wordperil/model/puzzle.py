@@ -2,7 +2,6 @@ from wordperil.common.constants import TILES_HORIZONTAL, TILES_VERTICAL
 
 
 class Puzzle:
-
     @staticmethod
     def extract_row(string):
         length = 0
@@ -15,7 +14,7 @@ class Puzzle:
             else:
                 line = f"{line} {word}"
 
-        line = line.strip().center(TILES_HORIZONTAL - 1)
+        line = line.strip().center(TILES_HORIZONTAL)
         return (line, unused)
 
     def __init__(self, puzzle, clue=""):
@@ -34,7 +33,7 @@ class Puzzle:
             raise ValueError("Cannot fit puzzle.")
         elif empty_rows >= TILES_VERTICAL // 2:
             for row in range(empty_rows // 2):
-                self.rows.insert(0, "")
+                self.rows.insert(0, "".center(TILES_HORIZONTAL))
 
     def __iter__(self):
         return iter(self.rows)

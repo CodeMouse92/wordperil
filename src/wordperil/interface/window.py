@@ -2,6 +2,7 @@ from PySide2.QtWidgets import QGridLayout, QWidget
 
 from .puzzleboard import PuzzleBoard
 from .usedletterboard import UsedLetterBoard
+from .scoreboard import ScoreBoard
 
 
 class Window(QWidget):
@@ -20,17 +21,17 @@ class Window(QWidget):
         self.setStyleSheet("background-color: black;")
 
         # Create layout and add widgets
-        layout = QGridLayout()
+        self.layout = QGridLayout()
+        self.setLayout(self.layout)
 
         self.usedletters = UsedLetterBoard()
-        layout.addWidget(self.usedletters, 0, 0, 2, 1)
+        self.layout.addWidget(self.usedletters, 0, 0, 3, 1)
 
-        # Create widgets
         self.board = PuzzleBoard()
-        layout.addWidget(self.board, 0, 1, 2, 3)
+        self.layout.addWidget(self.board, 0, 1, 3, 3)
 
-        # Set dialog layout
-        self.setLayout(layout)
+        self.scores = ScoreBoard()
+        self.layout.addWidget(self.scores, 3, 0, 1, -1)
 
     def showMessage(self, message, prompt):
         self.board.showMessage(message, prompt)

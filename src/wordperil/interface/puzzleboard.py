@@ -1,3 +1,4 @@
+import itertools
 from enum import Enum
 
 from PySide2.QtWidgets import QGridLayout, QVBoxLayout, QLabel, QFrame, QWidget
@@ -34,7 +35,7 @@ class Tile(QLabel):
         background-color: green;
         color: white;
     """
-    font = QFont("mono", 24)
+    font = QFont("mono", 32)
 
     def __init__(self, letter=None, **kwargs):
         super().__init__(letter, **kwargs)
@@ -67,7 +68,7 @@ class Tile(QLabel):
                 self.setStyleSheet(self.style_shown)
 
     def reveal(self):
-        if self.text() != '#':
+        if self.text() != "#":
             self.status = TileStatus.SHOWN
             self.setStyleSheet(self.style_shown)
 
@@ -79,7 +80,7 @@ class Clue(QLabel):
         background-color: blue;
         color: white;
     """
-    font = QFont("mono", 20)
+    font = QFont("mono", 22)
 
     def __init__(self, **kwargs):
         super().__init__("", **kwargs)
@@ -97,43 +98,40 @@ class Clue(QLabel):
 
 
 class PuzzleGrid(QWidget):
-
     def __init__(self, parent=None):
         super().__init__(parent)
 
         # Create layout
-        layout = QGridLayout()
-        layout.setHorizontalSpacing(0)
-        layout.setVerticalSpacing(0)
+        self.layout = QGridLayout()
+        self.layout.setHorizontalSpacing(0)
+        self.layout.setVerticalSpacing(0)
 
-        # Generate board
-        self.tiles = [
-            [Tile() for _ in range(TILES_HORIZONTAL)]
-            for _ in range(TILES_VERTICAL)
-        ]
-        for v, row in enumerate(self.tiles):
-            for h, tile in enumerate(row):
-                layout.addWidget(tile, v, h, 1, 1)
+        self.tiles = []
+        for v in range(TILES_VERTICAL):
+            for h in range(TILES_HORIZONTAL):
+                tile = Tile()
+                self.tiles.append(tile)
+                self.layout.addWidget(tile, v, h, 1, 1)
 
-        self.setLayout(layout)
+        self.setLayout(self.layout)
 
     def loadPuzzle(self, puzzle):
-        for i, row in enumerate(puzzle):
-            for j, letter in enumerate(row):
-                self.tiles[i][j].setLetter(letter)
+        i = 0
+        for row in puzzle:
+            for letter in row:
+                self.tiles[i].setLetter(letter)
+                i += 1
 
     def reveal(self, letter=None):
         revealed = 0
-        for row in self.tiles:
-            for tile in row:
-                if letter is None or tile.text() == letter.upper():
-                    tile.reveal()
-                    revealed += 1
+        for tile in self.tiles:
+            if letter is None or tile.text() == letter.upper():
+                tile.reveal()
+                revealed += 1
         return revealed
 
 
 class PuzzleBoard(QWidget):
-
     def __init__(self, parent=None):
         super().__init__(parent)
 
