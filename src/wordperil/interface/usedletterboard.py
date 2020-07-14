@@ -48,8 +48,9 @@ class UsedLetter(QLabel):
         self.setStyleSheet(self.style_hidden)
 
     def setShown(self):
-        self.status = LetterStatus.SHOWN
-        self.setStyleSheet(self.style_shown)
+        if self.text != '#':
+            self.status = LetterStatus.SHOWN
+            self.setStyleSheet(self.style_shown)
 
 
 class UsedLetterBoard(QWidget):
@@ -113,4 +114,4 @@ class UsedLetterBoard(QWidget):
             letter.setHidden()
 
     def showLetter(self, letter):
-        self.letters[letter].setShown()
+        self.letters[letter.upper()].setShown()

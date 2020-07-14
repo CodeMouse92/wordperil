@@ -1,12 +1,19 @@
 from PySide2.QtWidgets import QGridLayout, QWidget
 
-from wordperil.model.puzzle import Puzzle
-
 from .puzzleboard import PuzzleBoard
 from .usedletterboard import UsedLetterBoard
 
 
 class Window(QWidget):
+
+    _primary_window = None
+
+    @classmethod
+    def primary(cls, *args, **kwargs):
+        if not cls._primary_window:
+            cls._primary_window = Window(*args, **kwargs)
+        return cls._primary_window
+
     def __init__(self, parent=None):
         super().__init__(parent)
         self.setWindowTitle("Word Peril")
@@ -22,12 +29,23 @@ class Window(QWidget):
         self.board = PuzzleBoard()
         layout.addWidget(self.board, 0, 1, 2, 3)
 
-        # HACK: temporary
-        self.board.setPuzzle(Puzzle("ask forgiveness not permission", clue="Phrase"))
-        self.usedletters.showLetter("A")
-        self.usedletters.showLetter("D")
-        self.usedletters.showLetter("Z")
-        self.usedletters.showLetter("M")
-
         # Set dialog layout
         self.setLayout(layout)
+
+    def showMessage(self, message, prompt):
+        self.board.showMessage(message, prompt)
+
+    def loadPuzzle(self, puzzle):
+        """Load a puzzle into the gameboard."""
+        self.usedletters.reset()
+        self.board.loadPuzzle(puzzle)
+
+    def guess(self, letter):
+        """Guess a letter, updating the score of the current player."""
+        if letter.isalpha():
+            self.usedletters.showLetter(letter)
+            correct = self.board.reveal(letter)
+            # HACK
+            print(correct)
+        else:
+            raise TypeError("Cannot guess non-letter.")

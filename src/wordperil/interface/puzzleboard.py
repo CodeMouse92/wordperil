@@ -5,6 +5,7 @@ from PySide2.QtGui import QFont
 from PySide2.QtCore import Qt
 
 from wordperil.common.constants import TILES_HORIZONTAL, TILES_VERTICAL
+from wordperil.model.puzzle import Puzzle
 
 
 class TileStatus(Enum):
@@ -66,8 +67,9 @@ class Tile(QLabel):
                 self.setStyleSheet(self.style_shown)
 
     def reveal(self):
-        self.status = TileStatus.SHOWN
-        self.setStyleSheet(self.style_shown)
+        if self.text() != '#':
+            self.status = TileStatus.SHOWN
+            self.setStyleSheet(self.style_shown)
 
 
 class Clue(QLabel):
@@ -115,10 +117,19 @@ class PuzzleGrid(QWidget):
 
         self.setLayout(layout)
 
-    def setPuzzle(self, puzzle):
+    def loadPuzzle(self, puzzle):
         for i, row in enumerate(puzzle):
             for j, letter in enumerate(row):
                 self.tiles[i][j].setLetter(letter)
+
+    def reveal(self, letter=None):
+        revealed = 0
+        for row in self.tiles:
+            for tile in row:
+                if letter is None or tile.text() == letter.upper():
+                    tile.reveal()
+                    revealed += 1
+        return revealed
 
 
 class PuzzleBoard(QWidget):
@@ -138,6 +149,14 @@ class PuzzleBoard(QWidget):
         # Set dialog layout
         self.setLayout(self.layout)
 
-    def setPuzzle(self, puzzle):
+    def loadPuzzle(self, puzzle):
         self.clue.setText(puzzle.clue)
-        self.puzzle.setPuzzle(puzzle)
+        self.puzzle.loadPuzzle(puzzle)
+
+    def showMessage(self, message, prompt):
+        puzzle = Puzzle(message, clue=prompt)
+        self.loadPuzzle(puzzle)
+        self.puzzle.reveal()
+
+    def reveal(self, letter):
+        return self.puzzle.reveal(letter)

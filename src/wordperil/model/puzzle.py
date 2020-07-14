@@ -32,7 +32,7 @@ class Puzzle:
         empty_rows = TILES_VERTICAL - len(self.rows)
         if empty_rows < 0:
             raise ValueError("Cannot fit puzzle.")
-        elif empty_rows <= TILES_VERTICAL // 2:
+        elif empty_rows >= TILES_VERTICAL // 2:
             for row in range(empty_rows // 2):
                 self.rows.insert(0, "")
 
