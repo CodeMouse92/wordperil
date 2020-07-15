@@ -1,4 +1,6 @@
-from PySide2.QtWidgets import QGridLayout, QWidget, QPushButton
+from pathlib import Path
+
+from PySide2.QtWidgets import QGridLayout, QWidget, QFileDialog
 from PySide2.QtCore import Qt
 
 from .controller import Controller, ControllerMode
@@ -8,6 +10,7 @@ from .scoreboard import ScoreBoard
 from .statusbar import StatusBar
 
 from wordperil.model.puzzle import Puzzle
+from wordperil.model.puzzleset import Puzzleset
 
 
 class Window(QWidget):
@@ -58,7 +61,7 @@ class Window(QWidget):
     [ENTER] - start round.
     """
     def setupMode(self):
-        self.showMessage("word peril", "No puzzle set loaded.")
+        self.showMessage("word peril", Puzzleset.getLoadedSetTitle())
         self.lockNames()
         self.showStatus("[L] to load puzzle set | [ENTER] to start.")
         self.controller.setMode(ControllerMode.SETUP)
@@ -71,10 +74,11 @@ class Window(QWidget):
     Disabled status bar.
     """
     def playersMode(self):
-        self.showMessage("Who's playing?", "[TAB] and enter names.")
-        self.unlockNames()
-        self.showStatus("3 players | [ENTER] to start | [ESC] to cancel.")
-        self.controller.setMode(ControllerMode.PLAYERS)
+        if Puzzleset.isSetLoaded():
+            self.showMessage("Who's playing?", "[TAB] to enter names.")
+            self.unlockNames()
+            self.showStatus("[TAB] past names and [ENTER] to start | [ESC] to cancel.")
+            self.controller.setMode(ControllerMode.PLAYERS)
 
     """
     SCORE MODE
@@ -87,10 +91,11 @@ class Window(QWidget):
     [E] - end round
     """
     def scoreMode(self):
-        self.showMessage("word peril", "No puzzle set loaded.")
-        self.lockNames()
-        self.showStatus("[N] for next round | [ESC] to end game")
-        self.controller.setMode(ControllerMode.SCORE)
+        if self.scores.verifyNames():
+            self.showMessage("word peril", Puzzleset.getLoadedSetTitle())
+            self.lockNames()
+            self.showStatus("[N] for next round | [ESC] to end game.")
+            self.controller.setMode(ControllerMode.SCORE)
 
     """
     PUZZLE MODE
@@ -109,6 +114,16 @@ class Window(QWidget):
         self.controller.setMode(ControllerMode.PUZZLE)
 
     # UTILITY FUNCTIONS
+
+    def loadPuzzleset(self):
+        filename = QFileDialog.getOpenFileName(
+            self,
+            "Open Puzzle Set",
+            str(Path.home()),
+            "Word Peril Puzzle Sets (*.peril)"
+        )
+        if Puzzleset.loadFromPath(Path(filename[0])):
+            self.showMessage("word peril", Puzzleset.getLoadedSetTitle())
 
     def showMessage(self, message, prompt):
         """Unload puzzle and show message on board instead."""

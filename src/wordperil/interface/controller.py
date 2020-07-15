@@ -41,7 +41,7 @@ class Controller(QWidget):
 
     def setupControl(self, event):
         if event.key() == Qt.Key_L:
-            print("Load")
+            self.window.loadPuzzleset()
         # elif event.key() == Qt.Key_P:
         #     print("Players Toggle")
         elif event.key() == Qt.Key_Enter or event.key() == Qt.Key_Return:
@@ -57,7 +57,7 @@ class Controller(QWidget):
         if event.key() == Qt.Key_Enter or event.key() == Qt.Key_Return:
             self.window.puzzleMode()
         elif event.key() == Qt.Key_Escape:
-            self.window.setupMode()
+            self.window.playersMode()
 
     def puzzleControl(self, event):
         letters = [

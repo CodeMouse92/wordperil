@@ -42,6 +42,7 @@ class ScoreWidget(QWidget):
         self.player.setFocusPolicy(Qt.NoFocus)
 
     def unlock(self):
+        self.score.display(0)
         self.player.setReadOnly(False)
         self.player.setFocusPolicy(Qt.StrongFocus)
 
@@ -80,12 +81,19 @@ class ScoreBoard(QWidget):
             self.layout.addWidget(score)
 
     def unlockNames(self):
+        """Erase scores and unlock names for editing."""
         for score in self.scores:
             score.unlock()
 
     def lockNames(self):
         for score in self.scores:
             score.lock()
+
+    def verifyNames(self):
+        for player in self.scores:
+            if player.player.text().strip() == "":
+                return False
+        return True
 
     def nextPlayer(self):
         if self.focus_player is None:
