@@ -54,7 +54,7 @@ class Controller(QWidget):
             self.window.setupMode()
 
     def scoreControl(self, event):
-        if event.key() == Qt.Key_Enter or event.key() == Qt.Key_Return:
+        if event.key() == Qt.Key_N:
             self.window.puzzleMode()
         elif event.key() == Qt.Key_Escape:
             self.window.playersMode()
@@ -70,4 +70,4 @@ class Controller(QWidget):
         if event.key() in letters:
             print(event.text())
         # elif event.key() == Qt.Key_Escape:
-        #     print("Abort")
+        #     self.window.playersMode()
