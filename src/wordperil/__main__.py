@@ -3,8 +3,6 @@ from PySide2.QtWidgets import QApplication
 
 from wordperil.interface import Window
 
-from wordperil.model.puzzle import Puzzle
-
 
 def main():
     # Create the Qt Application
@@ -13,8 +11,8 @@ def main():
     window = Window.primary()
     window.show()
 
-    window.showMessage("word peril", "Press L to load puzzles.")
-    window.showStatus("Created by Jason C. McDonald.")
+    window.setupMode()
+
     # Run the main Qt loop
     sys.exit(app.exec_())
 

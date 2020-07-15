@@ -130,6 +130,10 @@ class PuzzleGrid(QWidget):
                 revealed += 1
         return revealed
 
+    def clear(self):
+        for tile in self.tiles:
+            tile.setLetter(None)
+
 
 class PuzzleBoard(QWidget):
     def __init__(self, parent=None):
@@ -149,6 +153,7 @@ class PuzzleBoard(QWidget):
 
     def loadPuzzle(self, puzzle):
         self.clue.setText(puzzle.clue)
+        self.puzzle.clear()
         self.puzzle.loadPuzzle(puzzle)
 
     def showMessage(self, message, prompt):

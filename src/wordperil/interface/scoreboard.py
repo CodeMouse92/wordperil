@@ -57,20 +57,20 @@ class ScoreWidget(QWidget):
         score = self.score.intValue() + score_adjustment
         self.score.display(score)
 
+    def getScore(self):
+        return self.score.intValue()
+
 
 class ScoreBoard(QWidget):
-    def __init__(self, players=3, parent=None):
+    PLAYERS = 3
+
+    def __init__(self, parent=None):
         super().__init__(parent)
         self.layout = QHBoxLayout()
         self.setLayout(self.layout)
 
-        if players < 1:
-            raise ValueError("Must have at least one player.")
-        elif players > 3:
-            raise ValueError("Cannot have more than three players.")
-
-        self.players = players
-        self.focus_player = 0
+        self.players = self.PLAYERS
+        self.focus_player = None
 
         self.scores = []
 
@@ -78,9 +78,6 @@ class ScoreBoard(QWidget):
             score = ScoreWidget()
             self.scores.append(score)
             self.layout.addWidget(score)
-
-        # Start by highlighting the first player.
-        self.scores[0].highlight()
 
     def unlockNames(self):
         for score in self.scores:
@@ -91,13 +88,34 @@ class ScoreBoard(QWidget):
             score.lock()
 
     def nextPlayer(self):
-        self.scores[self.focus_player].unhighlight()
+        if self.focus_player is None:
+            self.focus_player = -1
+
+        self.unhighlight()
 
         self.focus_player += 1
         if self.focus_player >= self.players:
             self.focus_player = 0
 
         self.scores[self.focus_player].highlight()
+
+    def unhighlight(self):
+        """Unhighlight all scores."""
+        for score in self.scores:
+            score.unhighlight()
+
+    def showHighest(self):
+        """Highlights the highest scoring player(s)."""
+        highest = 0
+        leader = []
+        for player in self.scores:
+            score = player.getScore()
+            if score >= highest:
+                highest = score
+                leader.append(player)
+        if leader and highest > 0:
+            for player in leader:
+                player.highlight()
 
     def adjustScore(self, score):
         self.scores[self.focus_player].adjustScore(score)

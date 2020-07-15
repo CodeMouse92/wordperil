@@ -20,7 +20,13 @@ class StatusBar(QLineEdit):
         self.lock()
 
     def showMessage(self, message):
+        self.lock()
         self.setText(message)
+
+    def showPrompt(self, message):
+        self.setText("")
+        self.unlock()
+        self.setPlaceholderText(message)
 
     def getText(self):
         return self.text
