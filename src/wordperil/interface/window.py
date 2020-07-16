@@ -85,10 +85,12 @@ class Window(QWidget):
     [N] - next round
     [E] - end round
     """
-    def scoreMode(self):
+    def scoreMode(self, lastpuzzle="word peril"):
         if self.scores.verifyNames():
-            self.showMessage("word peril", Puzzleset.getLoadedSetTitle())
+            self.controller.setFocus(Qt.OtherFocusReason)
+            self.showMessage(lastpuzzle, Puzzleset.getLoadedSetTitle())
             self.lockNames()
+            self.scores.showHighest()
             self.showStatus("[N] for next round | [ESC] to end game.")
             self.controller.setMode(ControllerMode.SCORE)
 
@@ -161,23 +163,24 @@ class Window(QWidget):
             if correct > 0:
                 # Gain points for correct letters.
                 if letter in 'AEIOU':
-                    self.scores.adjustScore(
-                        constants.SCORE_CORRECT_VOWEL * correct
-                    )
+                    score_change = constants.SCORE_CORRECT_VOWEL * correct
+                    self.scores.adjustScore(score_change)
                 else:
-                    self.scores.adjustScore(
-                        constants.SCORE_CORRECT_CONSONANT * correct
-                    )
+                    score_change = constants.SCORE_CORRECT_CONSONANT * correct
+                    self.scores.adjustScore(score_change)
             else:
                 # Lose points for incorrect letters.
-                self.scores.adjustScore(constants.SCORE_INCORRECT_LETTER)
+                score_change = constants.SCORE_INCORRECT_LETTER
+                self.scores.adjustScore(score_change)
                 # Move on to next player.
                 self.scores.nextPlayer()
 
     def attemptSolve(self, solution):
         if self.board.attemptSolve(solution):
-            self.scores.adjustScore(constants.SCORE_CORRECT_SOLVE)
-            # TODO: Wait for [ENTER] before returning to scores.
+            score_change = constants.SCORE_CORRECT_SOLVE
+            self.scores.adjustScore(score_change)
+            self.scoreMode(self.board.puzzle_text)
         else:
-            self.scores.adjustScore(constants.SCORE_INCORRECT_SOLVE)
+            score_change = constants.SCORE_INCORRECT_SOLVE
+            self.scores.adjustScore(score_change)
             self.scores.nextPlayer()

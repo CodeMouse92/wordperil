@@ -30,7 +30,7 @@ class Puzzleset:
         if cls.loaded is None:
             return "No puzzle set loaded."
         else:
-            return f"{cls.loaded.title} ({len(cls.loaded.puzzles)} puzzles)"
+            return f"{cls.loaded.title} ({len(cls.loaded)} puzzles)"
 
     def __init__(self, title, *puzzles):
         self.title = title
@@ -44,5 +44,11 @@ class Puzzleset:
         # Remove all used puzzles from set
         self.puzzles.difference_update(self.used)
 
+    def __len__(self):
+        return len(self.puzzles)
+
     def getPuzzle(self):
-        return random.sample(self.puzzles, 1)[0]
+        puzzle = random.sample(self.puzzles, 1)[0]
+        self.used.add(puzzle)
+        self.puzzles.difference_update(self.used)
+        return puzzle

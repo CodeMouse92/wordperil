@@ -116,10 +116,13 @@ class ScoreBoard(QWidget):
         """Highlights the highest scoring player(s)."""
         highest = 0
         leader = []
+        self.unhighlight()
         for player in self.scores:
             score = player.getScore()
-            if score >= highest:
+            if score > highest:
                 highest = score
+                leader = [player]
+            if score == highest:
                 leader.append(player)
         if leader and highest > 0:
             for player in leader:
