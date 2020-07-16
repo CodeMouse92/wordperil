@@ -153,6 +153,7 @@ class PuzzleBoard(QWidget):
 
     def loadPuzzle(self, puzzle):
         self.clue.setText(puzzle.clue)
+        self.puzzle_text = puzzle.puzzle_text
         self.puzzle.clear()
         self.puzzle.loadPuzzle(puzzle)
 
@@ -161,5 +162,16 @@ class PuzzleBoard(QWidget):
         self.loadPuzzle(puzzle)
         self.puzzle.reveal()
 
-    def reveal(self, letter):
+    def reveal(self, letter=None):
+        if letter is None:
+            self.puzzle.reveal()
         return self.puzzle.reveal(letter)
+
+    def attemptSolve(self, guess):
+        guess = ''.join(filter(str.isalpha, guess.upper()))
+        solution = ''.join(filter(str.isalpha, self.puzzle_text.upper()))
+        if guess == solution:
+            self.reveal()
+            return True
+        else:
+            return False

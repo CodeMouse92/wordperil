@@ -36,16 +36,16 @@ class Window(QWidget):
         self.controller = Controller(self)
         self.layout.addWidget(self.controller, 0, 0, 1, -1)
 
-        self.usedletters = UsedLetterBoard()
+        self.usedletters = UsedLetterBoard(self)
         self.layout.addWidget(self.usedletters, 1, 0, 4, 1)
 
-        self.board = PuzzleBoard()
+        self.board = PuzzleBoard(self)
         self.layout.addWidget(self.board, 1, 1, 4, 3)
 
-        self.scores = ScoreBoard()
+        self.scores = ScoreBoard(self)
         self.layout.addWidget(self.scores, 5, 0, 2, -1)
 
-        self.statusbar = StatusBar()
+        self.statusbar = StatusBar(self)
         self.layout.addWidget(self.statusbar, 7, 0, 1, -1)
 
     # MAJOR MODE FUNCTIONS
@@ -173,3 +173,11 @@ class Window(QWidget):
                 self.scores.adjustScore(constants.SCORE_INCORRECT_LETTER)
                 # Move on to next player.
                 self.scores.nextPlayer()
+
+    def attemptSolve(self, solution):
+        if self.board.attemptSolve(solution):
+            self.scores.adjustScore(constants.SCORE_CORRECT_SOLVE)
+            # TODO: Wait for [ENTER] before returning to scores.
+        else:
+            self.scores.adjustScore(constants.SCORE_INCORRECT_SOLVE)
+            self.scores.nextPlayer()

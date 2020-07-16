@@ -12,12 +12,18 @@ class StatusBar(QLineEdit):
 
     font = QFont("mono", 18)
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    def __init__(self, parent, **kwargs):
+        super().__init__(parent, **kwargs)
+        self.parent = parent
         self.setAlignment(Qt.AlignCenter)
         self.setFont(self.font)
         self.setStyleSheet(self.style)
         self.lock()
+
+        self.returnPressed.connect(self.onPressed)
+
+    def onPressed(self):
+        self.parent.attemptSolve(self.text())
 
     def showMessage(self, message):
         self.lock()
