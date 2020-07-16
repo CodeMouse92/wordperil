@@ -3,7 +3,7 @@ from PySide2.QtWidgets import (
     QHBoxLayout,
     QVBoxLayout,
     QLineEdit,
-    QLCDNumber,
+    QLCDNumber
 )
 from PySide2.QtGui import QFont
 from PySide2.QtCore import Qt
@@ -22,7 +22,7 @@ class ScoreWidget(QWidget):
     font = QFont("mono", 22)
 
     def __init__(self, parent=None):
-        super().__init__(parent)
+        super().__init__(parent=parent)
         self.layout = QVBoxLayout()
         self.setLayout(self.layout)
 
@@ -66,7 +66,7 @@ class ScoreBoard(QWidget):
     PLAYERS = 3
 
     def __init__(self, parent=None):
-        super().__init__(parent)
+        super().__init__(parent=parent)
         self.layout = QHBoxLayout()
         self.setLayout(self.layout)
 
@@ -78,7 +78,7 @@ class ScoreBoard(QWidget):
         self.scores = []
 
         for _ in range(self.players):
-            score = ScoreWidget()
+            score = ScoreWidget(parent=self)
             self.scores.append(score)
             self.layout.addWidget(score)
 

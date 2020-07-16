@@ -1,7 +1,6 @@
-import itertools
 from enum import Enum
 
-from PySide2.QtWidgets import QGridLayout, QVBoxLayout, QLabel, QFrame, QWidget
+from PySide2.QtWidgets import QGridLayout, QLabel, QFrame, QWidget
 from PySide2.QtGui import QFont
 from PySide2.QtCore import Qt
 
@@ -39,8 +38,8 @@ class Tile(QLabel):
     """
     font = QFont("mono", 32)
 
-    def __init__(self, letter=None, **kwargs):
-        super().__init__(letter, **kwargs)
+    def __init__(self, letter=None, parent=None, **kwargs):
+        super().__init__(parent=parent, **kwargs)
 
         # Widget styling
         self.setFrameStyle(QFrame.Panel | QFrame.Raised)
@@ -78,33 +77,9 @@ class Tile(QLabel):
             self.setStyleSheet(self.style_hidden)
 
 
-class Clue(QLabel):
-    """The category/clue for the puzzle."""
-
-    stylesheet = """
-        background-color: blue;
-        color: white;
-    """
-    font = QFont("mono", 22)
-
-    def __init__(self, **kwargs):
-        super().__init__("", **kwargs)
-
-        # Widget styling
-        self.setFrameStyle(QFrame.Panel | QFrame.Raised)
-        self.setLineWidth(2)
-
-        # Formatting
-        self.setStyleSheet(self.stylesheet)
-        self.setFont(self.font)
-        self.setAlignment(Qt.AlignCenter)
-
-        self.setMaximumHeight(40)
-
-
 class PuzzleGrid(QWidget):
-    def __init__(self, parent=None):
-        super().__init__(parent)
+    def __init__(self, parent=None, **kwargs):
+        super().__init__(parent=parent, **kwargs)
 
         # Create layout
         self.layout = QGridLayout()
@@ -114,7 +89,7 @@ class PuzzleGrid(QWidget):
         self.tiles = []
         for v in range(TILES_VERTICAL):
             for h in range(TILES_HORIZONTAL):
-                tile = Tile()
+                tile = Tile(parent=self)
                 self.tiles.append(tile)
                 self.layout.addWidget(tile, v, h, 1, 1)
 
@@ -145,20 +120,68 @@ class PuzzleGrid(QWidget):
             tile.setLetter(None)
 
 
+class Counter(QLabel):
+    """Shows outcome of guesses."""
+
+    stylesheet = """
+        background-color: black;
+        color: green;
+    """
+    font = QFont("mono", 16)
+
+    def __init__(self, parent=None, **kwargs):
+        super().__init__("", parent=parent, **kwargs)
+        # Formatting
+        self.setStyleSheet(self.stylesheet)
+        self.setFont(self.font)
+        self.setAlignment(Qt.AlignCenter)
+        self.setMaximumHeight(40)
+
+    def update(self, text):
+        self.setText(text.upper())
+
+
+class Clue(QLabel):
+    """The category/clue for the puzzle."""
+
+    stylesheet = """
+        background-color: blue;
+        color: white;
+    """
+    font = QFont("mono", 22)
+
+    def __init__(self, parent=None, **kwargs):
+        super().__init__("", parent=parent, **kwargs)
+
+        # Widget styling
+        self.setFrameStyle(QFrame.Panel | QFrame.Raised)
+        self.setLineWidth(2)
+
+        # Formatting
+        self.setStyleSheet(self.stylesheet)
+        self.setFont(self.font)
+        self.setAlignment(Qt.AlignCenter)
+
+        self.setMaximumHeight(40)
+
+
 class PuzzleBoard(QWidget):
-    def __init__(self, parent=None):
-        super().__init__(parent)
+    def __init__(self, parent=None, **kwargs):
+        super().__init__(parent, **kwargs)
 
         # Create layout and add widgets
         self.layout = QGridLayout()
 
-        self.usedletters = UsedLetterBoard(self)
+        self.usedletters = UsedLetterBoard(parent=self)
         self.layout.addWidget(self.usedletters, 0, 0, 2, 1)
 
-        self.puzzle = PuzzleGrid()
+        self.counter = Counter(parent=self)
+        self.layout.addWidget(self.counter, 2, 0, 1, 1)
+
+        self.puzzle = PuzzleGrid(parent=self)
         self.layout.addWidget(self.puzzle, 0, 1, 1, 3)
 
-        self.clue = Clue()
+        self.clue = Clue(parent=self)
         self.layout.addWidget(self.clue, 1, 1, 1, 3)
 
         # Set dialog layout
@@ -184,15 +207,18 @@ class PuzzleBoard(QWidget):
         # If the letter is already guessed, moved on.
         if self.usedletters.usedLetter(letter):
             # Mark that this guess has nothing to undo.
+            self.counter.update(f"{letter} used")
             self.lastGuess = None
             return 0
         self.lastGuess = letter
         self.usedletters.showLetter(letter)
         matches = self.reveal(letter)
         if matches > 0:
+            self.counter.update(f"{matches} {letter}")
             return matches
         else:
             # If there were no matches, return -1.
+            self.counter.update(f"No {letter}")
             return -1
 
     def reveal(self, letter=None):
@@ -207,9 +233,11 @@ class PuzzleBoard(QWidget):
         guess = ''.join(filter(str.isalpha, guess.upper()))
         solution = ''.join(filter(str.isalpha, self.puzzle_text.upper()))
         if guess == solution:
+            self.counter.update(f"Winner!")
             self.reveal()
             return True
         else:
+            self.counter.update(f"Incorrect")
             return False
 
     def undoLast(self):
@@ -217,3 +245,4 @@ class PuzzleBoard(QWidget):
         if self.lastGuess:
             self.usedletters.hideLetter(self.lastGuess)
             self.puzzle.hide(self.lastGuess)
+            self.counter.update("")

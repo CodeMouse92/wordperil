@@ -23,8 +23,8 @@ class UsedLetter(QLabel):
     """
     font = QFont("mono", 22)
 
-    def __init__(self, letter=None, **kwargs):
-        super().__init__(letter, **kwargs)
+    def __init__(self, letter=None, parent=None, **kwargs):
+        super().__init__(letter, parent=parent, **kwargs)
 
         # Widget styling
         self.setFrameStyle(QFrame.Panel | QFrame.Sunken)
@@ -65,7 +65,7 @@ class UsedLetterBoard(QWidget):
         background-color: blue;
         color: white;
     """
-    font = QFont("mono", 20)
+    font = QFont("mono", 18)
 
     letter_positions = {
         "A": (0, 0),
@@ -97,7 +97,7 @@ class UsedLetterBoard(QWidget):
     }
 
     def __init__(self, parent=None):
-        super().__init__(parent)
+        super().__init__(parent=parent)
 
         # Create layout
         layout = QGridLayout()

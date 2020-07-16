@@ -1,3 +1,12 @@
 {
-    "python.pythonPath": "venv/bin/python"
+    "python.pythonPath": "venv/bin/python",
+    "cSpell.words": [
+        "isalpha",
+        "itertools",
+        "qlcd",
+        "unhighlight"
+    ],
+    "cSpell.ignoreWords": [
+        "aeiou"
+    ]
 }

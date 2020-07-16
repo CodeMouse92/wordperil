@@ -13,8 +13,8 @@ class ControllerMode(Enum):
 
 class Controller(QWidget):
 
-    def __init__(self, parent, **kwargs):
-        super().__init__(parent, **kwargs)
+    def __init__(self, parent=None, **kwargs):
+        super().__init__(parent=parent, **kwargs)
         self.window = parent
         self.setFocusPolicy(Qt.StrongFocus)
 
@@ -70,7 +70,6 @@ class Controller(QWidget):
         if event.key() in letters:
             self.window.guess(event.text())
         elif event.key() == Qt.Key_Pause:
-            # TODO
             self.window.undoLast()
         # elif event.key() == Qt.Key_Escape:
         #     self.window.playersMode()

@@ -9,7 +9,6 @@ from .scoreboard import ScoreBoard
 from .statusbar import StatusBar
 
 from wordperil.common import constants
-from wordperil.model.puzzle import Puzzle
 from wordperil.model.puzzleset import Puzzleset
 
 
@@ -32,16 +31,16 @@ class Window(QWidget):
         self.layout = QGridLayout()
         self.setLayout(self.layout)
 
-        self.controller = Controller(self)
+        self.controller = Controller(parent=self)
         self.layout.addWidget(self.controller, 0, 0, 1, -1)
 
-        self.board = PuzzleBoard(self)
+        self.board = PuzzleBoard(parent=self)
         self.layout.addWidget(self.board, 1, 0, 4, -1)
 
-        self.scores = ScoreBoard(self)
+        self.scores = ScoreBoard(parent=self)
         self.layout.addWidget(self.scores, 5, 0, 2, -1)
 
-        self.statusbar = StatusBar(self)
+        self.statusbar = StatusBar(parent=self)
         self.layout.addWidget(self.statusbar, 7, 0, 1, -1)
 
     # MAJOR MODE FUNCTIONS
@@ -68,7 +67,9 @@ class Window(QWidget):
         if Puzzleset.isSetLoaded():
             self.showMessage("Who's playing?", "[TAB] to enter names.")
             self.unlockNames()
-            self.showStatus("[TAB] past names and [ENTER] to start | [ESC] to cancel.")
+            self.showStatus(
+                "[TAB] past names and [ENTER] to start | [ESC] to cancel."
+            )
             self.controller.setMode(ControllerMode.PLAYERS)
 
     """
