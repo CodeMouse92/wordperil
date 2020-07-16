@@ -14,9 +14,9 @@ class Puzzleset:
         try:
             cls.loaded = Puzzleset(path)
         except (FileNotFoundError, NotADirectoryError):
-            print(f"{path} is not a valid path.")
+            raise FileNotFoundError
         except (IsADirectoryError, json.decoder.JSONDecodeError):
-            print(f"{path} is not a valid puzzle set file.")
+            raise ValueError
 
     @classmethod
     def getLoadedSet(cls):
@@ -25,6 +25,10 @@ class Puzzleset:
     @classmethod
     def isSetLoaded(cls):
         return (cls.loaded is not None)
+
+    @classmethod
+    def isSetExhausted(cls):
+        return not (cls.isSetLoaded and len(cls.loaded) > 0)
 
     @classmethod
     def getLoadedSetTitle(cls, count=True, default="No puzzle set loaded."):

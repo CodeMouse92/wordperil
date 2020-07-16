@@ -65,13 +65,16 @@ class Window(QWidget):
     Disabled solve bar.
     """
     def playersMode(self):
-        if Puzzleset.isSetLoaded():
+        if Puzzleset.isSetLoaded() and not Puzzleset.isSetExhausted():
             self.showMessage("Who's playing?", "[TAB] to enter names.")
             self.unlockNames()
             self.showStatus(
                 "[TAB] past names and [ENTER] to start | [ESC] to cancel."
             )
             self.controller.setMode(ControllerMode.PLAYERS)
+        elif Puzzleset.isSetExhausted():
+            self.showAction("Set Exhausted!")
+            self.setupMode()
 
     """
     SCORE MODE
@@ -102,11 +105,14 @@ class Window(QWidget):
     [TAB]/click to solve puzzle.
     """
     def puzzleMode(self):
-        self.loadPuzzle()
-        self.lockNames()
-        self.scores.nextPlayer()
-        self.showPrompt("[TAB] and enter solution to solve.")
-        self.controller.setMode(ControllerMode.PUZZLE)
+        if Puzzleset.isSetExhausted():
+            self.showAction("Set Exhausted!")
+        else:
+            self.loadPuzzle()
+            self.lockNames()
+            self.scores.nextPlayer()
+            self.showPrompt("[TAB] and enter solution to solve.")
+            self.controller.setMode(ControllerMode.PUZZLE)
 
     # UTILITY FUNCTIONS
 
@@ -117,8 +123,15 @@ class Window(QWidget):
             str(Path.home()),
             "Word Peril Puzzle Sets (*.peril)"
         )
-        Puzzleset.loadFromPath(Path(filename[0]))
-        self.showMessage("word peril", Puzzleset.getLoadedSetTitle())
+        try:
+            Puzzleset.loadFromPath(Path(filename[0]))
+        except FileNotFoundError:
+            self.showAction("File not found")
+        except ValueError:
+            self.showAction("Invalid file")
+        else:
+            self.showMessage("word peril", Puzzleset.getLoadedSetTitle())
+            self.showAction("Set Loaded!")
 
     def clearCache(self):
         puzzleset = Puzzleset.getLoadedSetTitle(count=False, default="")

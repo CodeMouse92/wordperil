@@ -190,18 +190,19 @@ class PuzzleBoard(QWidget):
         # Remember last actions
         self.lastGuess = None
 
-    def loadPuzzle(self, puzzle):
+    def loadPuzzle(self, puzzle, clearAction=True):
         self.clue.setText(puzzle.clue)
         self.puzzle_text = puzzle.puzzle_text
         self.puzzle.clear()
         self.usedletters.reset()
-        self.showAction("")
+        if clearAction:
+            self.showAction("")
         self.puzzle.loadPuzzle(puzzle)
 
     def showMessage(self, message, prompt):
         self.usedletters.reset()
         puzzle = Puzzle(message, clue=prompt)
-        self.loadPuzzle(puzzle)
+        self.loadPuzzle(puzzle, clearAction=False)
         self.puzzle.reveal()
 
     def showAction(self, action):
