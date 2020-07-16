@@ -123,6 +123,8 @@ class Window(QWidget):
             str(Path.home()),
             "Word Peril Puzzle Sets (*.peril)"
         )
+        if not filename[0]:
+            return
         try:
             Puzzleset.loadFromPath(Path(filename[0]))
         except FileNotFoundError:
