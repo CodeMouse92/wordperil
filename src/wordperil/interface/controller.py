@@ -68,6 +68,9 @@ class Controller(QWidget):
             Qt.Key_Y, Qt.Key_Z]
 
         if event.key() in letters:
-            print(event.text())
+            self.window.guess(event.text())
+        elif event.key() == Qt.Key_Pause:
+            # TODO
+            print("Undo last action!")
         # elif event.key() == Qt.Key_Escape:
         #     self.window.playersMode()

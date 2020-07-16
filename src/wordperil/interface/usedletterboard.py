@@ -52,6 +52,9 @@ class UsedLetter(QLabel):
             self.status = LetterStatus.SHOWN
             self.setStyleSheet(self.style_shown)
 
+    def isShown(self):
+        return self.status == LetterStatus.SHOWN
+
 
 class UsedLetterBoard(QWidget):
     """The category/clue for the puzzle."""
@@ -115,3 +118,6 @@ class UsedLetterBoard(QWidget):
 
     def showLetter(self, letter):
         self.letters[letter.upper()].setShown()
+
+    def usedLetter(self, letter):
+        return self.letters[letter.upper()].isShown()

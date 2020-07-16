@@ -20,9 +20,10 @@ class Puzzle:
     def __init__(self, puzzle, clue=""):
         self.clue = clue
 
-        # Break the puzzle down into rows to fit on puzzle board
         puzzle = puzzle.upper()
+        self.puzzle_text = puzzle
 
+        # Break the puzzle down into rows to fit on puzzle board
         self.rows = []
         while puzzle:
             line, puzzle = self.extract_row(puzzle)
@@ -34,6 +35,9 @@ class Puzzle:
         elif empty_rows >= TILES_VERTICAL // 2:
             for row in range(empty_rows // 2):
                 self.rows.insert(0, "".center(TILES_HORIZONTAL))
+
+    def __hash__(self):
+        return hash(self.puzzle_text)
 
     def __iter__(self):
         return iter(self.rows)

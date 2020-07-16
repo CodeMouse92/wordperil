@@ -9,6 +9,7 @@ from .usedletterboard import UsedLetterBoard
 from .scoreboard import ScoreBoard
 from .statusbar import StatusBar
 
+from wordperil.common import constants
 from wordperil.model.puzzle import Puzzle
 from wordperil.model.puzzleset import Puzzleset
 
@@ -52,13 +53,7 @@ class Window(QWidget):
     """
     SETUP MODE
 
-    Puzzle board: Shows current puzzle file name.
-    Score Board: Blank. Disabled name fields.
-    Solve Bar: Disabled, shows instructions.
-
-    [L] - brings up dialog for loading puzzle file.
-    [P] - toggle player count.
-    [ENTER] - start round.
+    Puzzle board: Shows current puzzle file name.import
     """
     def setupMode(self):
         self.showMessage("word peril", Puzzleset.getLoadedSetTitle())
@@ -141,9 +136,9 @@ class Window(QWidget):
     def loadPuzzle(self):
         """Load a puzzle into the gameboard."""
         self.usedletters.reset()
-        # TODO: Load a puzzle from the model
-        puzzle = Puzzle("guido's time machine", clue="Phrase")
-        self.board.loadPuzzle(puzzle)
+        puzzleset = Puzzleset.getLoadedSet()
+        if puzzleset:
+            self.board.loadPuzzle(puzzleset.getPuzzle())
 
     def lockNames(self):
         self.scores.lockNames()
@@ -153,10 +148,28 @@ class Window(QWidget):
 
     def guess(self, letter):
         """Guess a letter, updating the score of the current player."""
-        if letter.isalpha():
+        if not letter.isalpha():
+            raise TypeError("Cannot guess non-letter.")
+
+        if self.usedletters.usedLetter(letter):
+            # If the letter is already guessed, moved on.
+            self.scores.nextPlayer()
+        else:
+            letter = letter.upper()
             self.usedletters.showLetter(letter)
             correct = self.board.reveal(letter)
-            # HACK
-            print(correct)
-        else:
-            raise TypeError("Cannot guess non-letter.")
+            if correct > 0:
+                # Gain points for correct letters.
+                if letter in 'AEIOU':
+                    self.scores.adjustScore(
+                        constants.SCORE_CORRECT_VOWEL * correct
+                    )
+                else:
+                    self.scores.adjustScore(
+                        constants.SCORE_CORRECT_CONSONANT * correct
+                    )
+            else:
+                # Lose points for incorrect letters.
+                self.scores.adjustScore(constants.SCORE_INCORRECT_LETTER)
+                # Move on to next player.
+                self.scores.nextPlayer()
