@@ -67,6 +67,7 @@ class Window(QWidget):
     def playersMode(self):
         if Puzzleset.isSetLoaded() and not Puzzleset.isSetExhausted():
             self.showMessage("Who's playing?", "[TAB] to enter names.")
+            self.showAction("")
             self.unlockNames()
             self.showStatus(
                 "[TAB] past names and [ENTER] to start | [ESC] to cancel."

@@ -84,6 +84,7 @@ class ScoreBoard(QWidget):
 
     def unlockNames(self):
         """Erase scores and unlock names for editing."""
+        self.unhighlight()
         for score in self.scores:
             score.unlock()
 
