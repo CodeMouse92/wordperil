@@ -10,6 +10,7 @@ from .solvebar import SolveBar
 
 from wordperil.common import constants
 from wordperil.model.puzzleset import Puzzleset
+from wordperil.model.usedcache import UsedCache
 
 
 class Window(QWidget):
@@ -116,12 +117,23 @@ class Window(QWidget):
             str(Path.home()),
             "Word Peril Puzzle Sets (*.peril)"
         )
-        if Puzzleset.loadFromPath(Path(filename[0])):
+        Puzzleset.loadFromPath(Path(filename[0]))
+        self.showMessage("word peril", Puzzleset.getLoadedSetTitle())
+
+    def clearCache(self):
+        puzzleset = Puzzleset.getLoadedSetTitle(count=False, default="")
+        if puzzleset:
+            UsedCache.getPrimary().flush(puzzleset)
             self.showMessage("word peril", Puzzleset.getLoadedSetTitle())
+            self.showAction("Reset puzzle set!")
 
     def showMessage(self, message, prompt):
         """Unload puzzle and show message on board instead."""
         self.board.showMessage(message, prompt)
+
+    def showAction(self, action):
+        """Announce an action in the counter."""
+        self.board.showAction(action)
 
     def showStatus(self, status):
         """Show message in solve bar."""

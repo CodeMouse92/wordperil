@@ -44,6 +44,8 @@ class Controller(QWidget):
             self.window.loadPuzzleset()
         # elif event.key() == Qt.Key_P:
         #     print("Players Toggle")
+        elif event.key() == Qt.Key_R:
+            self.window.clearCache()
         elif event.key() == Qt.Key_Enter or event.key() == Qt.Key_Return:
             self.window.playersMode()
 

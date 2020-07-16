@@ -41,3 +41,6 @@ class Puzzle:
 
     def __iter__(self):
         return iter(self.rows)
+
+    def __str__(self):
+        return self.puzzle_text

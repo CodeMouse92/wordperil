@@ -1,5 +1,8 @@
 import random
+
+import json
 from .puzzle import Puzzle
+from .usedcache import UsedCache
 
 
 class Puzzleset:
@@ -9,13 +12,11 @@ class Puzzleset:
     @classmethod
     def loadFromPath(cls, path):
         try:
-            with path.open() as file:
-                title = file.readline().strip()
-                puzzles = file.readlines()
-                cls.loaded = Puzzleset(title, *puzzles)
-                return True
+            cls.loaded = Puzzleset(path)
         except (FileNotFoundError, NotADirectoryError):
-            return False
+            print(f"{path} is not a valid path.")
+        except (IsADirectoryError, json.decoder.JSONDecodeError):
+            print(f"{path} is not a valid puzzle set file.")
 
     @classmethod
     def getLoadedSet(cls):
@@ -26,29 +27,46 @@ class Puzzleset:
         return (cls.loaded is not None)
 
     @classmethod
-    def getLoadedSetTitle(cls):
+    def getLoadedSetTitle(cls, count=True, default="No puzzle set loaded."):
         if cls.loaded is None:
-            return "No puzzle set loaded."
-        else:
+            return default
+        elif count:
             return f"{cls.loaded.title} ({len(cls.loaded)} puzzles)"
+        else:
+            return cls.loaded.title
 
-    def __init__(self, title, *puzzles):
-        self.title = title
-        self.puzzles = set()
-        self.used = set()  # TODO: Load from saved files
-        for puzzle in puzzles:
-            if puzzle.strip() == "":
-                continue
-            clue, text = puzzle.split(sep='|', maxsplit=1)
-            self.puzzles.add(Puzzle(text.strip(), clue.strip()))
-        # Remove all used puzzles from set
-        self.puzzles.difference_update(self.used)
+    def __init__(self, path):
+        with path.open() as file:
+            data = json.load(file)
+            title = tuple(data.keys())[0]
+            self.title = title.upper()
+            self.puzzles = set()
+            for clue, puzzles in data[title].items():
+                for puzzle in puzzles:
+                    self.puzzles.add(
+                        (
+                            puzzle.strip().upper(),
+                            clue.strip().upper()
+                        )
+                    )
+            # TODO: Prevalidate puzzles
 
     def __len__(self):
-        return len(self.puzzles)
+        used = UsedCache.getPrimary().get(self.title)
+        return len(self.puzzles.difference(used))
+
+    def markUsed(self, puzzle_raw):
+        UsedCache.getPrimary().add(self.title, puzzle_raw)
+        UsedCache.getPrimary().write()
 
     def getPuzzle(self):
-        puzzle = random.sample(self.puzzles, 1)[0]
-        self.used.add(puzzle)
-        self.puzzles.difference_update(self.used)
-        return puzzle
+        used = UsedCache.getPrimary().get(self.title)
+        avail = self.puzzles.difference(used)
+        selection = random.sample(avail, 1)[0]
+        puzzle_text, clue = selection
+        try:
+            puzzle = Puzzle(puzzle_text, clue=clue)
+            self.markUsed(selection)
+            return puzzle
+        except ValueError:
+            return self.getPuzzle()

@@ -195,6 +195,7 @@ class PuzzleBoard(QWidget):
         self.puzzle_text = puzzle.puzzle_text
         self.puzzle.clear()
         self.usedletters.reset()
+        self.showAction("")
         self.puzzle.loadPuzzle(puzzle)
 
     def showMessage(self, message, prompt):
@@ -203,22 +204,25 @@ class PuzzleBoard(QWidget):
         self.loadPuzzle(puzzle)
         self.puzzle.reveal()
 
+    def showAction(self, action):
+        self.counter.update(action)
+
     def guess(self, letter):
         # If the letter is already guessed, moved on.
         if self.usedletters.usedLetter(letter):
             # Mark that this guess has nothing to undo.
-            self.counter.update(f"{letter} used")
+            self.showAction(f"{letter} used")
             self.lastGuess = None
             return 0
         self.lastGuess = letter
         self.usedletters.showLetter(letter)
         matches = self.reveal(letter)
         if matches > 0:
-            self.counter.update(f"{matches} {letter}")
+            self.showAction(f"{matches} {letter}")
             return matches
         else:
             # If there were no matches, return -1.
-            self.counter.update(f"No {letter}")
+            self.showAction(f"No {letter}")
             return -1
 
     def reveal(self, letter=None):
@@ -233,11 +237,11 @@ class PuzzleBoard(QWidget):
         guess = ''.join(filter(str.isalpha, guess.upper()))
         solution = ''.join(filter(str.isalpha, self.puzzle_text.upper()))
         if guess == solution:
-            self.counter.update(f"Winner!")
+            self.showAction(f"Winner!")
             self.reveal()
             return True
         else:
-            self.counter.update(f"Incorrect")
+            self.showAction(f"Incorrect")
             return False
 
     def undoLast(self):
@@ -245,4 +249,4 @@ class PuzzleBoard(QWidget):
         if self.lastGuess:
             self.usedletters.hideLetter(self.lastGuess)
             self.puzzle.hide(self.lastGuess)
-            self.counter.update("")
+            self.showAction("")

@@ -11,6 +11,7 @@ setuptools.setup(
         ],
     },
     install_requires=[
-        'pyside2'
+        'pyside2',
+        'appdirs'
     ],
 )
