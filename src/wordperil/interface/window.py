@@ -5,7 +5,6 @@ from PySide2.QtCore import Qt
 
 from .controller import Controller, ControllerMode
 from .puzzleboard import PuzzleBoard
-from .usedletterboard import UsedLetterBoard
 from .scoreboard import ScoreBoard
 from .statusbar import StatusBar
 
@@ -36,11 +35,8 @@ class Window(QWidget):
         self.controller = Controller(self)
         self.layout.addWidget(self.controller, 0, 0, 1, -1)
 
-        self.usedletters = UsedLetterBoard(self)
-        self.layout.addWidget(self.usedletters, 1, 0, 4, 1)
-
         self.board = PuzzleBoard(self)
-        self.layout.addWidget(self.board, 1, 1, 4, 3)
+        self.layout.addWidget(self.board, 1, 0, 4, -1)
 
         self.scores = ScoreBoard(self)
         self.layout.addWidget(self.scores, 5, 0, 2, -1)
@@ -124,7 +120,6 @@ class Window(QWidget):
 
     def showMessage(self, message, prompt):
         """Unload puzzle and show message on board instead."""
-        self.usedletters.reset()
         self.board.showMessage(message, prompt)
 
     def showStatus(self, status):
@@ -137,7 +132,6 @@ class Window(QWidget):
 
     def loadPuzzle(self):
         """Load a puzzle into the gameboard."""
-        self.usedletters.reset()
         puzzleset = Puzzleset.getLoadedSet()
         if puzzleset:
             self.board.loadPuzzle(puzzleset.getPuzzle())
@@ -153,27 +147,25 @@ class Window(QWidget):
         if not letter.isalpha():
             raise TypeError("Cannot guess non-letter.")
 
-        if self.usedletters.usedLetter(letter):
-            # If the letter is already guessed, moved on.
-            self.scores.nextPlayer()
-        else:
-            letter = letter.upper()
-            self.usedletters.showLetter(letter)
-            correct = self.board.reveal(letter)
-            if correct > 0:
-                # Gain points for correct letters.
-                if letter in 'AEIOU':
-                    score_change = constants.SCORE_CORRECT_VOWEL * correct
-                    self.scores.adjustScore(score_change)
-                else:
-                    score_change = constants.SCORE_CORRECT_CONSONANT * correct
-                    self.scores.adjustScore(score_change)
-            else:
-                # Lose points for incorrect letters.
-                score_change = constants.SCORE_INCORRECT_LETTER
+        letter = letter.upper()
+        correct = self.board.guess(letter)
+        if correct > 0:
+            # Gain points for correct letters.
+            if letter in 'AEIOU':
+                score_change = constants.SCORE_CORRECT_VOWEL * correct
                 self.scores.adjustScore(score_change)
-                # Move on to next player.
-                self.scores.nextPlayer()
+            else:
+                score_change = constants.SCORE_CORRECT_CONSONANT * correct
+                self.scores.adjustScore(score_change)
+        elif correct < 0:
+            # Lose points for incorrect letters.
+            score_change = constants.SCORE_INCORRECT_LETTER
+            self.scores.adjustScore(score_change)
+            # Move on to next player.
+            self.scores.nextPlayer()
+        elif correct == 0:
+            # Already used, move on to next player.
+            self.scores.nextPlayer()
 
     def attemptSolve(self, solution):
         if self.board.attemptSolve(solution):
@@ -184,3 +176,7 @@ class Window(QWidget):
             score_change = constants.SCORE_INCORRECT_SOLVE
             self.scores.adjustScore(score_change)
             self.scores.nextPlayer()
+
+    def undoLast(self):
+        self.scores.undoLast()
+        self.board.undoLast()

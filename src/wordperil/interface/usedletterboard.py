@@ -119,5 +119,8 @@ class UsedLetterBoard(QWidget):
     def showLetter(self, letter):
         self.letters[letter.upper()].setShown()
 
+    def hideLetter(self, letter):
+        self.letters[letter.upper()].setHidden()
+
     def usedLetter(self, letter):
         return self.letters[letter.upper()].isShown()

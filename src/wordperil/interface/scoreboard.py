@@ -73,6 +73,8 @@ class ScoreBoard(QWidget):
         self.players = self.PLAYERS
         self.focus_player = None
 
+        self.lastScore = None
+
         self.scores = []
 
         for _ in range(self.players):
@@ -94,6 +96,13 @@ class ScoreBoard(QWidget):
             if player.player.text().strip() == "":
                 return False
         return True
+
+    def undoLast(self):
+        if self.lastScore:
+            self.unhighlight()
+            self.focus_player = self.lastScore[0]
+            self.scores[self.focus_player].highlight()
+            self.adjustScore(-(self.lastScore[1]))
 
     def nextPlayer(self):
         if self.focus_player is None:
@@ -129,8 +138,10 @@ class ScoreBoard(QWidget):
                 player.highlight()
 
     def adjustScore(self, score):
+        self.lastScore = (self.focus_player, score)
         self.scores[self.focus_player].adjustScore(score)
 
     def reset(self):
+        self.lastScore = None
         for score in self.scores:
             score.reset()
