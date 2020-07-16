@@ -6,7 +6,7 @@ from PySide2.QtCore import Qt
 from .controller import Controller, ControllerMode
 from .puzzleboard import PuzzleBoard
 from .scoreboard import ScoreBoard
-from .statusbar import StatusBar
+from .solvebar import SolveBar
 
 from wordperil.common import constants
 from wordperil.model.puzzleset import Puzzleset
@@ -40,8 +40,8 @@ class Window(QWidget):
         self.scores = ScoreBoard(parent=self)
         self.layout.addWidget(self.scores, 5, 0, 2, -1)
 
-        self.statusbar = StatusBar(parent=self)
-        self.layout.addWidget(self.statusbar, 7, 0, 1, -1)
+        self.solvebar = SolveBar(parent=self)
+        self.layout.addWidget(self.solvebar, 7, 0, 1, -1)
 
     # MAJOR MODE FUNCTIONS
 
@@ -61,7 +61,7 @@ class Window(QWidget):
 
     Puzzle board shows messages.
     Enabled name fields.
-    Disabled status bar.
+    Disabled solve bar.
     """
     def playersMode(self):
         if Puzzleset.isSetLoaded():
@@ -95,7 +95,7 @@ class Window(QWidget):
     PUZZLE MODE
 
     Disabled name fields.
-    Enabled status bar.
+    Enabled solve bar.
 
     [LETTER] guesses letter.
     [TAB]/click to solve puzzle.
@@ -124,12 +124,12 @@ class Window(QWidget):
         self.board.showMessage(message, prompt)
 
     def showStatus(self, status):
-        """Show message in status bar."""
-        self.statusbar.showMessage(status)
+        """Show message in solve bar."""
+        self.solvebar.showMessage(status)
 
     def showPrompt(self, prompt):
-        """Show prompt in status bar, and allow user to input."""
-        self.statusbar.showPrompt(prompt)
+        """Show prompt in solve bar, and allow user to input."""
+        self.solvebar.showPrompt(prompt)
 
     def loadPuzzle(self):
         """Load a puzzle into the gameboard."""

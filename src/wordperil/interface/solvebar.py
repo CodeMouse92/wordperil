@@ -3,7 +3,7 @@ from PySide2.QtGui import QFont
 from PySide2.QtCore import Qt
 
 
-class StatusBar(QLineEdit):
+class SolveBar(QLineEdit):
 
     style = """
         background-color: black;
