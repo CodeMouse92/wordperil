@@ -53,6 +53,7 @@ class Window(QWidget):
     """
     def setupMode(self):
         self.showMessage("word peril", Puzzleset.getLoadedSetTitle())
+        self.unlockNames()  # this also resets the scoreboard
         self.lockNames()
         self.showStatus("[L] to load puzzle set | [ENTER] to start.")
         self.controller.setMode(ControllerMode.SETUP)

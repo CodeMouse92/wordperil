@@ -104,6 +104,7 @@ class ScoreBoard(QWidget):
             self.focus_player = self.lastScore[0]
             self.scores[self.focus_player].highlight()
             self.adjustScore(-(self.lastScore[1]))
+            self.lastScore = None
 
     def nextPlayer(self):
         if self.focus_player is None:

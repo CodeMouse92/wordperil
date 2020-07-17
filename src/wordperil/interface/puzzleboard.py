@@ -251,3 +251,4 @@ class PuzzleBoard(QWidget):
             self.usedletters.hideLetter(self.lastGuess)
             self.puzzle.hide(self.lastGuess)
             self.showAction("")
+            self.lastGuess = None

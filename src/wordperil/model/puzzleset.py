@@ -45,15 +45,17 @@ class Puzzleset:
             title = tuple(data.keys())[0]
             self.title = title.upper()
             self.puzzles = set()
+            self.puzzle_objs = {}
             for clue, puzzles in data[title].items():
                 for puzzle in puzzles:
-                    self.puzzles.add(
-                        (
-                            puzzle.strip().upper(),
-                            clue.strip().upper()
-                        )
-                    )
-            # TODO: Prevalidate puzzles
+                    puzzle = puzzle.strip().upper()
+                    clue = clue.strip().upper()
+                    try:
+                        self.puzzle_objs[puzzle] = Puzzle(puzzle, clue=clue)
+                    except ValueError:
+                        pass
+                    else:
+                        self.puzzles.add((puzzle, clue))
 
     def __len__(self):
         used = UsedCache.getPrimary().get(self.title)
@@ -67,10 +69,5 @@ class Puzzleset:
         used = UsedCache.getPrimary().get(self.title)
         avail = self.puzzles.difference(used)
         selection = random.sample(avail, 1)[0]
-        puzzle_text, clue = selection
-        try:
-            puzzle = Puzzle(puzzle_text, clue=clue)
-            self.markUsed(selection)
-            return puzzle
-        except ValueError:
-            return self.getPuzzle()
+        self.markUsed(selection)
+        return self.puzzle_objs[selection[0]]
