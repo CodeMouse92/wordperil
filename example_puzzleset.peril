@@ -1,0 +1,24 @@
+{
+    "Demo Puzzle Set":
+    {
+        "thing": [
+            "stack of sticky notes",
+            "pink eraser",
+            "office percolator",
+            "very long meeting"
+        ],
+        "person": [
+            "software developer",
+            "game show host"
+        ],
+        "title": [
+            "romeo and juliet",
+            "tale of two cities",
+            "the song of hiawatha"
+        ],
+        "what are you doing?": [
+            "playing a game",
+            "dining at a fancy restaurant"
+        ]
+    }
+}
