@@ -50,11 +50,7 @@ class Puzzleset:
                 for puzzle in puzzles:
                     puzzle = puzzle.strip().upper()
                     clue = clue.strip().upper()
-                    try:
-                        self.puzzle_objs[puzzle] = Puzzle(puzzle, clue=clue)
-                    except ValueError:
-                        pass
-                    else:
+                    if Puzzle.validate(puzzle):
                         self.puzzles.add((puzzle, clue))
 
     def __len__(self):
@@ -70,4 +66,5 @@ class Puzzleset:
         avail = self.puzzles.difference(used)
         selection = random.sample(avail, 1)[0]
         self.markUsed(selection)
-        return self.puzzle_objs[selection[0]]
+        puzzle, clue = selection
+        return Puzzle(puzzle, clue=clue)

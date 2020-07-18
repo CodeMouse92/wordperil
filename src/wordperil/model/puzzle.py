@@ -17,6 +17,15 @@ class Puzzle:
         line = line.strip().center(TILES_HORIZONTAL)
         return (line, unused)
 
+    @classmethod
+    def validate(cls, puzzle):
+        lines = 0
+        puzzle = puzzle.upper()
+        while puzzle and lines <= TILES_VERTICAL + 1:
+            line, puzzle = cls.extract_row(puzzle)
+            lines += 1
+        return (lines < TILES_VERTICAL + 1)
+
     def __init__(self, puzzle, clue=""):
         self.clue = clue
 
@@ -28,6 +37,8 @@ class Puzzle:
         while puzzle:
             line, puzzle = self.extract_row(puzzle)
             self.rows.append(line)
+            if len(self.rows) > TILES_VERTICAL:
+                raise ValueError("Cannot fit puzzle.")
 
         empty_rows = TILES_VERTICAL - len(self.rows)
         if empty_rows < 0:
