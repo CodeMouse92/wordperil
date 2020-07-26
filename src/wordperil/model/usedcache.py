@@ -41,11 +41,7 @@ class UsedCache:
             out[puzzleset] = list(puzzles)
         with self.path_tmp.open('w') as file:
             json.dump(out, file)
-        try:
-            self.path_tmp.rename(self.path)
-        except FileExistsError:
-            self.path.unlink()
-            self.path_tmp.rename(self.path)
+        self.path_tmp.replace(self.path)
 
     def add(self, puzzleset, puzzle_raw):
         if puzzleset not in self.cache:

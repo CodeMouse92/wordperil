@@ -59,7 +59,6 @@ class Puzzleset:
 
     def markUsed(self, puzzle_raw):
         UsedCache.getPrimary().add(self.title, puzzle_raw)
-        UsedCache.getPrimary().write()
 
     def getPuzzle(self):
         used = UsedCache.getPrimary().get(self.title)
